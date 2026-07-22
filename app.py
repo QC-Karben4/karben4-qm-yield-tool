@@ -15,6 +15,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+import auth
 import onedrive
 from data_loader import load_batches, Batch
 from engine import GrainItem, LauterInputs, SugarAdditions, BrewhouseInputs, CellarInputs, lauter_metrics, Constants
@@ -653,11 +654,17 @@ def page_model(batches: dict):
 
 
 def main():
+    # SSO gate — when [auth] is configured, halts here with a login screen for anyone
+    # not signed in with an allowed Karben4 account. Returns None (open mode) when
+    # auth isn't configured, so local/un-configured runs behave exactly as before.
+    user = auth.require_login()
+
     st.title("Karben4 QM Yield Tool")
     st.markdown(theme.HEX_RULE_HTML, unsafe_allow_html=True)
     st.caption("Single-user analysis tool for the Quality Manager (Scope v2, 2026-06-24). "
                "Brewers don't use this — results are read here, then transcribed by hand into paper brewlogs + Ekos.")
     lauter_path, yields_path = sidebar_sources()
+    auth.sidebar_account(user)
     const = _model_const_from_state()
     try:
         batches = _load_all(lauter_path, yields_path)

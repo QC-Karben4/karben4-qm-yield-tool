@@ -2,7 +2,7 @@
 client-credentials auth). Only activates when MS_TENANT_ID, MS_CLIENT_ID,
 MS_CLIENT_SECRET, and MS_DRIVE_ID are all set — as environment variables (Docker/
 any generic host) or as Streamlit Cloud "Secrets" (checked via st.secrets). See
-DEPLOY.md for how Karben4 IT sets those up. Without them, app.py falls back to
+DEPLOYMENT_RUNBOOK.md (Appendix A) for how Karben4 IT sets those up. Without them, app.py falls back to
 manual upload / local files, same as before.
 """
 import io

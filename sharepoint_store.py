@@ -18,7 +18,7 @@ keys (env vars or Streamlit "Secrets"):
                                                      (default "brewery_data.xlsx")
 
 Karben4 IT provides the first five (one Entra app registration + Graph `Sites.Selected`
-consent + the target library's drive id). See SHAREPOINT_SETUP.md.
+consent + the target library's drive id). See DEPLOYMENT_RUNBOOK.md (Phase 3B).
 """
 import io
 
