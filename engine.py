@@ -76,12 +76,6 @@ class GrainItem:
 
 
 @dataclass
-class HopItem:
-    name: str
-    weight_lb: float           # total addition (kettle/WP); used by the volume cascade
-
-
-@dataclass
 class LauterInputs:
     strike_water_temp_f: float
     strike_water_vol_gal: float

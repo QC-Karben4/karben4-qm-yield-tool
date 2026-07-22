@@ -23,7 +23,6 @@ from analysis import batch_dataframe, refit_dataframe
 from autofit import fit_all, DEFAULT_RETENTION_PCT
 import workbook_store
 import sharepoint_store
-from workbook_store import WORKBOOK_PATH
 from display import column_config
 import theme
 
@@ -134,15 +133,17 @@ def _sidebar_store_status():
         count = f"_(couldn't read the store: {e})_"
     st.sidebar.caption(f"Hand-entered batches auto-save to {_store_label()}. {count}")
     if STORE_IS_CLOUD:
-        st.sidebar.caption(
-            "✅ Stored in Karben4's SharePoint via Microsoft 365 — durable on this shared "
-            "link and openable in Excel Online."
+        st.sidebar.markdown(
+            theme.badge("SharePoint", "ok") + "  Stored in Karben4's SharePoint via "
+            "Microsoft 365 — durable on this shared link and openable in Excel Online.",
+            unsafe_allow_html=True,
         )
     else:
-        st.sidebar.caption(
-            "⚠️ Durable only when you run the app on your own computer. On a hosted "
-            "(Streamlit Cloud) link this file resets when the server restarts — export "
-            "from the **Data** tab there for a permanent copy, or configure SharePoint."
+        st.sidebar.markdown(
+            theme.badge("Local only", "warn") + "  Durable only when you run the app on your "
+            "own computer. On a hosted (Streamlit Cloud) link this file resets when the server "
+            "restarts — export from the **Data** tab for a permanent copy, or configure SharePoint.",
+            unsafe_allow_html=True,
         )
 
 
@@ -178,6 +179,37 @@ def _df_to_xlsx_bytes(df: pd.DataFrame) -> bytes:
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
         df.to_excel(writer, sheet_name="Batches", index=False)
     return buf.getvalue()
+
+
+def _chart_tooltip(df, *cols):
+    """Batch/beer identity + the plotted fields, for on-hover value readout
+    (chart best practice: tooltip-on-interact). Only keeps columns that exist."""
+    order, seen = [], set()
+    for c in ("batch_number", "beer", *cols):
+        if c in df.columns and c not in seen:
+            order.append(c); seen.add(c)
+    return order
+
+
+def _line_chart(df, x, y, x_title, y_title):
+    """Brand-themed line chart (replaces st.line_chart's off-brand default blue).
+    Uses theme=None so the registered Karben4 Altair theme applies."""
+    chart = alt.Chart(df).mark_line(point=True).encode(
+        x=alt.X(x, title=x_title, sort="x"),
+        y=alt.Y(y, title=y_title, scale=alt.Scale(zero=False)),
+        tooltip=_chart_tooltip(df, x, y),
+    )
+    st.altair_chart(chart, use_container_width=True, theme=None)
+
+
+def _scatter_chart(df, x, y, x_title, y_title):
+    """Brand-themed scatter (replaces st.scatter_chart's off-brand default)."""
+    chart = alt.Chart(df).mark_circle(size=90, opacity=0.85).encode(
+        x=alt.X(x, title=x_title, scale=alt.Scale(zero=False)),
+        y=alt.Y(y, title=y_title, scale=alt.Scale(zero=False)),
+        tooltip=_chart_tooltip(df, x, y),
+    )
+    st.altair_chart(chart, use_container_width=True, theme=None)
 
 
 def page_data(df):
@@ -218,7 +250,7 @@ def page_trends(df):
     if plot_df.empty:
         st.info("No batches have this metric populated yet.")
         return
-    st.line_chart(plot_df.set_index("batch_number")[metric])
+    _line_chart(plot_df, "batch_number", metric, "Batch number", metric)
 
     sub = beer_filter(df, "trends")
     if not sub.empty:
@@ -236,10 +268,12 @@ def page_levers(df):
     c1, c2 = st.columns(2)
     with c1:
         st.caption("Efficiency vs. loading")
-        st.scatter_chart(sub, x="lauter_loading_kgm2", y="final_brewhouse_eff_pct")
+        _scatter_chart(sub, "lauter_loading_kgm2", "final_brewhouse_eff_pct",
+                       "Lauter loading (kg/m²)", "Final brewhouse eff (%)")
     with c2:
         st.caption("Efficiency vs. mash thickness")
-        st.scatter_chart(sub, x="mash_thickness_qt_lb", y="final_brewhouse_eff_pct")
+        _scatter_chart(sub, "mash_thickness_qt_lb", "final_brewhouse_eff_pct",
+                       "Mash thickness (qt/lb)", "Final brewhouse eff (%)")
     corr = sub[["lauter_loading_kgm2", "mash_thickness_qt_lb"]].corr().iloc[0, 1]
     st.metric("corr(loading, thickness) in this data", f"{corr:.2f}")
 
@@ -254,7 +288,8 @@ def page_by_beer(df):
     sub = df[df["beer"] == beer].sort_values("batch_number")
     st.dataframe(sub, use_container_width=True, column_config=column_config(sub), hide_index=True)
     if sub["final_brewhouse_eff_pct"].notna().sum() > 1:
-        st.line_chart(sub.set_index("batch_number")["final_brewhouse_eff_pct"])
+        _line_chart(sub, "batch_number", "final_brewhouse_eff_pct",
+                    "Batch number", "Final brewhouse eff (%)")
 
 
 def page_refit(df, batches):
@@ -648,7 +683,7 @@ def page_model(batches: dict):
                 color=alt.Color("beer", legend=None),
                 tooltip=["beer", "n_batches", "x_pct", "gravity_p"],
             )
-            st.altair_chart(curve_chart + points_chart, use_container_width=True)
+            st.altair_chart(curve_chart + points_chart, use_container_width=True, theme=None)
 
     return const
 
