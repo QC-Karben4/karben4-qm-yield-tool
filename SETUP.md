@@ -18,7 +18,7 @@ One-time setup takes about 10 minutes. After that, starting the tool is 3 quick 
 4. When it finishes, click **Close**.
 
 ### Step 2 — Download the tool
-1. Go to **https://github.com/keshavsshah/karben4-qm-yield-tool**
+1. Go to **https://github.com/QC-Karben4/karben4-qm-yield-tool**
 2. Click the green **`< > Code`** button, then **Download ZIP**.
 3. Find the downloaded `karben4-qm-yield-tool-main.zip` (usually in your **Downloads** folder), right-click it → **Extract All…** → **Extract**.
 4. Move the extracted **`karben4-qm-yield-tool-main`** folder somewhere permanent, e.g. your **Documents** folder.
