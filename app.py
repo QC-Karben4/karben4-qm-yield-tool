@@ -109,7 +109,9 @@ def sidebar_sources():
         st.sidebar.caption(f"Lauter: `{lauter_item}`  \nYields: `{yields_item}`  \n"
                             "(cached 5 min — click Refresh for the latest edits)")
         try:
-            return _onedrive_workbook(lauter_item), _onedrive_workbook(yields_item)
+            books = _onedrive_workbook(lauter_item), _onedrive_workbook(yields_item)
+            _sidebar_store_status()   # must run on this path too — it's the only thing
+            return books              # that tells the user where saved batches go
         except Exception as e:
             st.sidebar.error(f"OneDrive fetch failed, falling back to local: {e}")
 
