@@ -97,8 +97,12 @@ def sidebar_sources():
     st.sidebar.header("Data sources")
 
     if onedrive.is_configured():
-        lauter_item = onedrive.get_config("MS_LAUTER_ITEM_PATH", "Inputs/Lauter_Checks_2.xlsx")
-        yields_item = onedrive.get_config("MS_YIELDS_ITEM_PATH", "Inputs/Brewery_Yields.xlsx")
+        # Defaults are the real Karben4 locations, resolved against Graph 2026-08-05:
+        # both workbooks live in the "Production Ops/R&D" folder of the Karben4 Brewing
+        # Home site's document library (the drive named by MS_DRIVE_ID). Override either
+        # with the matching secret if a workbook moves.
+        lauter_item = onedrive.get_config("MS_LAUTER_ITEM_PATH", "Production Ops/R&D/Lauter_Checks_2.xlsx")
+        yields_item = onedrive.get_config("MS_YIELDS_ITEM_PATH", "Production Ops/R&D/Brewery_Yields.xlsx")
         st.sidebar.success("Reading live from OneDrive/SharePoint.")
         if st.sidebar.button("Refresh from OneDrive"):
             _onedrive_workbook.clear()

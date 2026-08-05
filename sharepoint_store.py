@@ -36,7 +36,10 @@ _REQUIRED_KEYS = ("MS_TENANT_ID", "MS_CLIENT_ID", "MS_CLIENT_SECRET", "MS_DRIVE_
 
 
 def _item_path() -> str:
-    return onedrive.get_config("MS_DATA_ITEM_PATH", "brewery_data.xlsx")
+    # Default keeps the tool's own data file beside the two source workbooks in the
+    # Karben4 Brewing Home site ("Production Ops/R&D", the drive named by MS_DRIVE_ID).
+    # Created on first save — it does not need to exist beforehand.
+    return onedrive.get_config("MS_DATA_ITEM_PATH", "Production Ops/R&D/brewery_data.xlsx")
 
 
 def is_configured() -> bool:

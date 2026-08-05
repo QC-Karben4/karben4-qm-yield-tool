@@ -116,7 +116,8 @@ covers both** the SharePoint write-back and the login. IT does:
       MS_CLIENT_ID      = "…"
       MS_CLIENT_SECRET  = "…"
       MS_DRIVE_ID       = "…"
-      MS_DATA_ITEM_PATH = "Brewing/brewery_data.xlsx"   # the agreed path
+      # MS_DATA_ITEM_PATH — optional. Defaults in code to the real Karben4 location,
+      # "Production Ops/R&D/brewery_data.xlsx". Only set it to override.
 
       # ── Karben4 SSO login (delegated OIDC) ──
       [auth]
@@ -187,11 +188,11 @@ admin ask.**
 > Only caveat: this holds while all three files stay in one site. If a source workbook moves to a
 > *different* site, add a second `Sites.Selected` site grant for that site — still not `Files.Read.All`.
 
-- [ ] 🧑‍💻 Add to Streamlit Secrets (uses the same `MS_TENANT_ID/CLIENT_ID/CLIENT_SECRET/DRIVE_ID`):
-      ```toml
-      MS_LAUTER_ITEM_PATH = "Inputs/Lauter_Checks_2.xlsx"
-      MS_YIELDS_ITEM_PATH = "Inputs/Brewery_Yields.xlsx"
-      ```
+- [x] 🧑‍💻 **Nothing to add — the paths now default in code** (2026-08-05). Both workbooks were
+      resolved against Graph to `Production Ops/R&D` in the Karben4 Brewing Home drive, and those are
+      the built-in defaults in `app.py`. The live-read turns on as soon as the four credential keys
+      (`MS_TENANT_ID/CLIENT_ID/CLIENT_SECRET/DRIVE_ID`) are present.
+      Only set `MS_LAUTER_ITEM_PATH` / `MS_YIELDS_ITEM_PATH` to override a moved workbook.
 - Effect: the sidebar switches from **Upload** buttons to **"Reading live from OneDrive/SharePoint"**
   (cached 5 min, with a Refresh button). If the fetch fails it falls back to the upload UI.
 
