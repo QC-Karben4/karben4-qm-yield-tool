@@ -174,9 +174,19 @@ covers both** the SharePoint write-back and the login. IT does:
 
 The main path stores **hand-entered batches** in SharePoint (Phase 3B). Separately, the app can also
 **auto-read the two source workbooks** (`Lauter_Checks_2.xlsx`, `Brewery_Yields.xlsx`) live instead of
-the QM uploading them each session. This is optional and needs **one extra Graph permission**.
+the QM uploading them each session. This is **secrets-only — no extra Graph permission and no second
+admin ask.**
 
-- [ ] 🏢 On the same Entra app, add Graph **Application** permission **`Files.Read.All`** + admin consent.
+> **Corrected 2026-08-05.** This appendix used to call for a `Files.Read.All` Application permission.
+> That is **not needed.** All three files live in the **same SharePoint site** (confirmed 2026-07-22),
+> and both readers hit `/drives/{drive_id}/root:/{path}:/content` ([[projects/Karben4-Lauter-Yields-DOE/Process/qm_yield_tool/onedrive.py|onedrive.py]] `fetch_file`,
+> [[projects/Karben4-Lauter-Yields-DOE/Process/qm_yield_tool/sharepoint_store.py|sharepoint_store.py]] `_content_url`) — drive-scoped calls that the **Phase 3B `Sites.Selected`
+> site grant already covers**. Requesting `Files.Read.All` would be tenant-wide read on every file in
+> Karben4 — far more than this app needs, and a much harder sell to the admin.
+>
+> Only caveat: this holds while all three files stay in one site. If a source workbook moves to a
+> *different* site, add a second `Sites.Selected` site grant for that site — still not `Files.Read.All`.
+
 - [ ] 🧑‍💻 Add to Streamlit Secrets (uses the same `MS_TENANT_ID/CLIENT_ID/CLIENT_SECRET/DRIVE_ID`):
       ```toml
       MS_LAUTER_ITEM_PATH = "Inputs/Lauter_Checks_2.xlsx"
