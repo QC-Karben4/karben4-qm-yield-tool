@@ -1,9 +1,16 @@
 # Setup Guide — Karben4 QM Yield Tool (Windows)
 
-How to install and run the yield tool on a Windows computer. Running it locally
-this way means **your data saves permanently** to a file on this computer
-(`brewery_data.xlsx`) and stays put between sessions — unlike the shared web link,
-whose data resets.
+> **Most people don't need this.** As of 2026-08-05 the web link does everything a local
+> install does — **https://karben4-qm-yield-tool.streamlit.app/** — with nothing to install,
+> your batches saved permanently to Karben4's SharePoint, and both workbooks loaded for you.
+> Sign in with your Karben4 M365 account and you're working.
+>
+> Install locally only if you want to work **offline**, need the tool when SharePoint or the
+> network is down, or are developing/testing changes.
+
+How to install and run the yield tool on a Windows computer. Running it locally keeps your
+data in a `brewery_data.xlsx` file **on this computer** rather than in SharePoint — so it's
+yours alone, and it's on you to back it up.
 
 One-time setup takes about 10 minutes. After that, starting the tool is 3 quick steps.
 

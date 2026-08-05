@@ -12,6 +12,31 @@
 
 ---
 
+## ✅ STATUS: COMPLETE (2026-08-05) — this runbook is now history, not a to-do list
+
+Everything below has been executed. The app is live, gated, and SharePoint-backed:
+
+| | |
+|---|---|
+| Live URL | https://karben4-qm-yield-tool.streamlit.app/ |
+| Login | Karben4 Entra SSO, enforced |
+| Storage | SharePoint — reads both workbooks live, writes `brewery_data.xlsx` |
+| Verified | Full write → read-back → delete round trip, 2026-08-05 |
+| Client secret | rotated 2026-08-05 · **expires 2028-08-05** |
+
+**Keep this doc for:** rebuilding from scratch, onboarding a successor, or re-running a phase after
+something breaks. Two hard-won details worth reading before you touch the config:
+
+1. **`Sites.Selected` consent grants nothing by itself.** It only makes the app *eligible* for site
+   grants. Handing it an actual site is a separate `POST /sites/{siteId}/permissions` call that
+   requires `Sites.FullControl.All` on whoever runs it. Missing this cost the project two weeks.
+2. **Secrets nesting silently breaks storage.** The four `MS_*` keys must sit **above** the `[auth]`
+   header. TOML assigns every key after a `[table]` header to that table, so keys pasted below
+   `[auth]` become `auth.MS_*`, `is_configured()` returns False, and the app quietly falls back to
+   local storage with **no error message** — it looks like the grant failed when it didn't.
+
+---
+
 ## The order matters (read this first)
 
 There's one dependency loop: **IT can't register the login redirect URI until the app has a
